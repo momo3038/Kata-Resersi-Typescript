@@ -13,6 +13,14 @@ export enum Player {
     White
 }
 
+
+class Piece {
+    constructor(x:number, y:number, state:tileState){
+        
+    }
+}
+
+
 export default class ReversiBoard {
     private board: tileState[][] = [];
 
@@ -33,19 +41,20 @@ export default class ReversiBoard {
         }
     }
 
-    getTitleState(coord: { x: number, y: number }): tileState {
-        return this.board[coord.x][coord.y];
+    getTitleState(x: number, y: number): tileState {
+        return this.board[x][y];
     }
 
-    IsAnOpponent(coord: { x: number, y: number }): boolean {
-        return this.board[coord.x][coord.y] == tileState.Black;
+    IsAnOpponent(x: number, y: number, player: Player): boolean {
+        var opponent = (player == Player.Black) ? tileState.White : tileState.Black;
+        return this.board[x][y] == opponent;
     }
 
     display(): string {
         var result = "";
         for (var y = 0; y < 8; y++) {
             for (var x = 0; x < 8; x++) {
-                var state = this.getTitleState({ x, y });
+                var state = this.getTitleState(x, y);
                 if (state == tileState.Empty)
                     result += ".";
 
@@ -69,33 +78,32 @@ export default class ReversiBoard {
         return result;
     }
 
+    isOutter(x: number, y: number): boolean {
+        return x <= 0 || y <= 0 || x >= 7 || y >= 7;
+    }
+
     getEligiblesMovesFor(player: Player): { x: number, y: number }[] {
 
         var eligiblesMoves: { x: number, y: number }[] = [];
         
-        // Find all opponent
+        // Find opponent
         for (var row = 0; row < 8; row++) {
             for (var col = 0; col < 8; col++) {
 
-                if (!this.IsAnOpponent({ x: col, y: row }))
+                if (!this.IsAnOpponent(col, row, player))
                     continue;
 
-                console.log("opponent found at x :" + col + " y : " + row);
                 //Search our piece near this opponent
                 for (var rowIndex = -1; rowIndex <= 1; rowIndex++) {
-
-                    if (row + rowIndex <= 0 || row + rowIndex >= 7)
-                        continue;
-
                     for (var colIndex = -1; colIndex <= 1; colIndex++) {
-
-                        if (col + colIndex <= 0 || col + colIndex >= 7)
-                            continue;
-
                         var indexX = col + colIndex;
                         var indexY = row + rowIndex;
 
-                        if (this.board[indexX][indexY] == tileState.White) {
+                        if (this.isOutter(indexX, indexY))
+                            continue;
+                            
+                        var me = (player == Player.White) ? tileState.White : tileState.Black;
+                        if (this.board[indexX][indexY] == me) {
                             // Search in the opposite direction
                             var nextRow = () => 1 * -colIndex;
                             var nextCol = () => 1 * -rowIndex;
@@ -106,17 +114,15 @@ export default class ReversiBoard {
                                 indexX += nextRow();
                                 indexY += nextCol();
 
-                                var piece = this.board[indexX][indexY];
+                                var piece = this.getTitleState(indexX, indexY);
 
-                                if (piece == tileState.White) {
-                                    console.log("white detected. over");
+                                if (!this.IsAnOpponent(indexX, indexY, player)) {
                                     isOver = true;
-                                }
-                                else if (piece == tileState.Empty) {
-                                    isOver = true;
-                                    this.board[indexX][indexY] = tileState.Eligible;
-                                    eligiblesMoves.push({ x: indexX, y: indexY })
-                                    console.log("found eligible position (x:" + indexX + ") y : " + indexY);
+
+                                    if (piece == tileState.Empty) {
+                                        this.board[indexX][indexY] = tileState.Eligible;
+                                        eligiblesMoves.push({ x: indexX, y: indexY })
+                                    }
                                 }
                             };
                         }

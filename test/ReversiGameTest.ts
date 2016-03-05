@@ -14,7 +14,7 @@ describe("Resersi Game", () => {
     it("Should initialize a board", () => {
         let board = new ReversiBoard();
 
-        expect(board.getTitleState({ x: 4, y: 4 })).to.be.eq(tileState.Empty);
+        expect(board.getTitleState(4,4)).to.be.eq(tileState.Empty);
     })
 
     it("Should add initial state", () => {
@@ -26,10 +26,10 @@ describe("Resersi Game", () => {
             { x: 4, y: 3, who: Player.White },
             { x: 4, y: 4, who: Player.Black });
 
-        expect(board.getTitleState({ x: 3, y: 3 })).to.be.eq(tileState.Black);
-        expect(board.getTitleState({ x: 3, y: 4 })).to.be.eq(tileState.White);
-        expect(board.getTitleState({ x: 4, y: 3 })).to.be.eq(tileState.White);
-        expect(board.getTitleState({ x: 4, y: 4 })).to.be.eq(tileState.Black);
+        expect(board.getTitleState(3, 3)).to.be.eq(tileState.Black);
+        expect(board.getTitleState(3, 4)).to.be.eq(tileState.White);
+        expect(board.getTitleState(4, 3)).to.be.eq(tileState.White);
+        expect(board.getTitleState(4, 4)).to.be.eq(tileState.Black);
     });
 
 
@@ -225,25 +225,15 @@ describe("Resersi Game", () => {
         let board = new ReversiBoard();
 
         board.initialize(
-            //{ x: 3, y: 0, who: Player.Black },
-            //{ x: 4, y: 0, who: Player.White },
-
-//             { x: 4, y: 1, who: Player.White },
-// 
-//             { x: 2, y: 2, who: Player.Black },
-//             { x: 3, y: 2, who: Player.Black },
-//             { x: 4, y: 2, who: Player.White },
-//             { x: 5, y: 2, who: Player.Black },
-// 
             { x: 2, y: 3, who: Player.Black },
             { x: 3, y: 3, who: Player.Black },
             { x: 4, y: 3, who: Player.White },
-// 
+
             { x: 2, y: 4, who: Player.Black },
             { x: 3, y: 4, who: Player.Black },
             { x: 4, y: 4, who: Player.White },
             { x: 5, y: 4, who: Player.White },
-             { x: 7, y: 4, who: Player.White },
+            { x: 7, y: 4, who: Player.White },
 
             { x: 3, y: 5, who: Player.Black },
             { x: 4, y: 5, who: Player.White },
@@ -257,15 +247,17 @@ describe("Resersi Game", () => {
             { x: 3, y: 7, who: Player.White },
             { x: 4, y: 7, who: Player.White });
 
-    var result = board.display();
-        console.log(result);
-        
+        var result = board.display();
+
         var eligiblesMoves = board.getEligiblesMovesFor(Player.White);
 
         var result = board.display();
         console.log(result);
 
-        //expect(eligiblesMoves.length).to.be.eq(0);
+        expect(eligiblesMoves.length).to.be.eq(6);
+
+        expect(eligiblesMoves[0].x).to.be.eq(1);
+        expect(eligiblesMoves[0].y).to.be.eq(3);
     });
 
 });
